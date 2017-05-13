@@ -5,8 +5,10 @@ defmodule SelectionSort do
   14000 times lower than native sort with 10000 items
   """
 
-  def run(arr) do
-    sort(arr, 0)
+  def run do
+    {t, v} = :timer.tc(fn() -> List.flatten(sort(Enum.into(1000..1, []), 0)) end)
+    IO.inspect("Time(ms): #{t/1000}")
+    IO.inspect("Result: #{inspect v}")
   end
 
   def sort(list, low_bound) when low_bound == length(list) - 1 do
