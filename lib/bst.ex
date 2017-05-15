@@ -6,8 +6,9 @@ defmodule Bst do
     bst = from_array(Enum.into(200..230, []))
     # print_graph(bst)
     # has_value(bst, 290)
-    print_graph(insert(bst, 240))
-
+    # print_graph(insert(bst, 240))
+    removed = remove(bst, 203) # Should be replaced with smallest right (204)
+    print_graph(removed)
   end
 
 
@@ -53,7 +54,6 @@ defmodule Bst do
     end
   end
 
-
   def insert(nil, new_value) do
     %{v: new_value, right: nil, left: nil}
   end
@@ -80,12 +80,44 @@ defmodule Bst do
     end
   end
 
-  def replace_nil_with_empty_array(list) do
-    Enum.filter(list, fn(i) -> i !== nil end)
+  def remove(bst, v) do
+    if has_value(bst, v), do: do_remove(bst, v), else: bst
+  end
+  def do_remove(bst, v) do
+    cond do
+      bst.v < v -> %{v: bst.v, right: do_remove(bst.right, v), left: bst.left}
+      bst.v > v -> %{v: bst.v, right: bst.right, left: do_remove(bst.left, v)}
+      true -> remove_top_most(bst)
+    end
+  end
+
+  def remove_top_most(bst) do
+    cond do
+      bst.left == nil && bst.right == nil -> nil
+      bst.left == nil && bst.right -> bst.right
+      bst.right == nil && bst.left -> bst.left
+
+      # Two children - in-place swap is needed
+      bst.left && bst.right -> swap(bst)
+    end
+  end
+
+  def swap(bst) do
+    smallest = find_smallest(bst.right)
+    no_smallest_right = remove(bst.right, smallest)
+    %{v: smallest, right: no_smallest_right, left: bst.left}
+  end
+
+  def find_smallest(bst) do
+    if (bst.left && bst.left.left) do
+      %{v: bst.v, left: find_smallest(bst.left), right: bst.right}
+    else
+      bst.left.v
+    end
   end
 
   def node_lvl_txt(nil) do
-    "(leaf)"
+    ""
   end
   def node_lvl_txt(lvl) do
     "#{lvl.v} > (#{lvl.left && lvl.left.v || "x"} #{lvl.right && lvl.right.v || "x"})"
