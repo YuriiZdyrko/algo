@@ -2,7 +2,7 @@ defmodule Markov do
 
   @moduledoc """
   Implementation of Markov chain algorithm
-  Randomises text file content, based on character sequences in original file.
+  Randomises text file, based on probability of character sequences in original file.
   """
 
   def run(order) do

@@ -1,6 +1,6 @@
 defmodule QuickSort do
 
-  # Can be improved by passing lo/hi bounds to split, instead of passing sub-arrays
+  # Very slow. Can be improved by passing lo/hi bounds to split, instead of passing sub-arrays
 
   def run do
     {t, v} = :timer.tc(fn() -> List.flatten(sort(Enum.into(1000..1, []))) end)
