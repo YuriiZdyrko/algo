@@ -33,7 +33,7 @@ defmodule Bst do
 
   def do_print(nodes) do
     if (Enum.all?(nodes, fn(i) -> i == nil end)) do
-      "（。 ㅅ 。）"
+      "---"
     else
       nodes
       |> Enum.reduce("", fn(node, lvl_txt) ->
