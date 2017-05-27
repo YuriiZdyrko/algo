@@ -14,7 +14,6 @@ defmodule Mnemonics do
 
   def generate_combinations(numbers, mapping) do
     result = Enum.map(numbers, &(mapping[&1]))
-    # v_iterative(result)
     v_recursive(result)
   end
 

@@ -13,8 +13,6 @@ defmodule Challenge do
     |> collect(@divisors)
     |> filter_divisible_by_both
     |> Enum.sum
-
-    # number
   end
 
   def collect(number, divisors) do

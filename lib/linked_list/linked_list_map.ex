@@ -38,6 +38,7 @@ defmodule LinkedListMap do
 
         # Because I didn't find a way to insert into Map at arbitrary depth,
         # convert map to_list first, then concatenate, then convert back to_nested_map
+        # P.S. Stupid!
         tail = to_list(%{
           value: val,
           next: curr.next

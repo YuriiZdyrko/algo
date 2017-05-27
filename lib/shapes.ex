@@ -3,24 +3,25 @@ defmodule Shapes do
   @moduledoc """
   Finds matching shapes (horizontal and vertical lines of length 3)
   in 2-dimensinal array.
+  Implementation: iterates through each cell, if cell is "0" recursively
+  finds it's "0" siblings.
   """
 
-  @shapes [
-    [0,1,1,1,1,1,1,1,1,1,1],
-    [0,0,0,1,1,1,1,1,1,1,1],
-    [0,0,0,1,1,1,1,1,1,1,1],
-    [1,1,0,1,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1,1,1,1,1],
-    [1,1,1,1,0,0,0,0,1,1,1],
-    [1,1,1,1,1,1,1,1,1,1,1],
-    [1,1,1,1,0,0,0,1,1,1,1],
-    [1,1,1,1,1,1,1,1,1,1,1],
-    [1,0,0,0,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1,1,1,1,1]
+  @matrix [
+    [0,0,0,  1,1,1,1,1,1],
+    [0,1,0,  1,1,1,1,1,1],
+    [0,1,0,  1,1,1,1,1,1],
+
+    [1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,0,1,1],
+    [1,1,1,1,0,0,0,1,1],
+    [1,1,1,1,1,1,0,1,1]
   ]
 
   def run do
-    find(@shapes)
+    find(@matrix)
   end
 
   @doc """
@@ -49,8 +50,8 @@ defmodule Shapes do
     |> Enum.with_index
     |> Enum.map(fn({cell, cell_index}) ->
       if cell === 0 do
-        res = explore(shapes, {row_index, cell_index}, {row_index, cell_index}, MapSet.new([{row_index, cell_index}]))
-        process_cube(res)
+        cell_zero_siblings = explore(shapes, {row_index, cell_index}, {row_index, cell_index}, MapSet.new([{row_index, cell_index}]))
+        process_cube(cell_zero_siblings)
       end
     end)
   end
@@ -64,8 +65,7 @@ defmodule Shapes do
     # Recursion will be terminated when no adjacent "0" cells are discovered
     # in all 4 directions
 
-    # Check 4 directions for adjacent "0" cells
-    all_new_found = check_all_dirs(shapes, coords, curr_coords)
+    all_new_found = get_relevant_siblings(shapes, coords, curr_coords)
 
     new_found = MapSet.difference(all_new_found, result)
     new_result = MapSet.union(result, all_new_found)
@@ -79,10 +79,24 @@ defmodule Shapes do
   end
 
   @doc """
+  Given a cell, checks 4 directions for adjacent "0" cells
+  Returns Set of all adjacent "0" cells
+  """
+  def get_relevant_siblings(shapes, coords, curr_coords) do
+    [:right, :down, :left, :up]
+    |> Enum.map(fn(i) -> get_all_siblings(shapes, curr_coords, i) end)
+    |> Enum.filter(fn({found_coords, v}) ->
+      v !== 1 && in_range?(coords, found_coords)
+    end)
+    |> Enum.map(fn({found_coords, _}) -> found_coords end)
+    |> Enum.into(MapSet.new)
+  end
+
+  @doc """
   Accepts array of {x, y} coordinates of every "0" in_range
   Returns array of matching shapes or empty array
   """
-  defp process_cube(cube) do
+  def process_cube(cube) do
     cube_arr = Enum.into(cube, [])
 
     x_row = cube_arr
@@ -102,25 +116,17 @@ defmodule Shapes do
   end
 
   defp in_range?({y, x}, {y2, x2}) do
-    pos(y2 - y) < 3 && pos(x2 - x) < 3
+    to_positive(y2 - y) < 3 && to_positive(x2 - x) < 3
   end
 
-  defp pos(num) when num < 0, do: -num
-  defp pos(num), do: num
-
-  defp check_all_dirs(shapes, coords, curr_coords) do
-    [:right, :down, :left, :up]
-    |> Enum.map(fn(i) -> check_dir(shapes, curr_coords, i) end)
-    |> Enum.filter(fn({_, v}) -> v !== 1 end)
-    |> Enum.map(fn({found_coords, _}) -> found_coords end)
-    |> Enum.filter(fn(found_coords) -> in_range?(coords, found_coords) end)
-    |> Enum.into(MapSet.new)
-  end
+  defp to_positive(num) when num < 0, do: -num
+  defp to_positive(num), do: num
 
   @doc """
-  Returns array of "0" siblings for single cell
+  Returns array of all siblings and their values for single cell
+  Example response: [{{0, 1}, 1}, {{0, 2}, v}]
   """
-  defp check_dir(shapes, {y, x}, dir) do
+  defp get_all_siblings(shapes, {y, x}, dir) do
     {y, x} = case dir do
       :right -> {y, x + 1}
       :down -> {y - 1, x}
