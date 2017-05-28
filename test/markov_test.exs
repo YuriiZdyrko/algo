@@ -8,7 +8,7 @@ defmodule MarkovTest do
   end
 
   test "picks initial seed correctly", context do
-    {seed, next_chars} = Markov.pick_initial_seed(Markov.get_mapping(context[:str], 2))
+    {seed, next_chars} = Markov.pick_initial_seed(Markov.get_freqs(context[:str], 2))
     set = MapSet.new(["g", " ", "t", "s"])
     assert {seed, set} == {"in", MapSet.new(next_chars)}
   end

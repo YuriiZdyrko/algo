@@ -1,16 +1,12 @@
 defmodule SelectionSort do
 
-  @moduledoc """
-  Selection sort Elixir implementation.
-  14000 times lower than native sort with 10000 items
-  """
-
   def run do
-    {t, v} = :timer.tc(fn() -> List.flatten(sort(Enum.into(1000..1, []), 0)) end)
+    {t, v} = :timer.tc(fn() -> List.flatten(sort(Enum.into(1000..1, []))) end)
     IO.inspect("Time(ms): #{t/1000}")
     IO.inspect("Result: #{inspect v}")
   end
 
+  def sort(list, low_bound \\ 0)
   def sort(list, low_bound) when low_bound == length(list) - 1 do
     list
   end

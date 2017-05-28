@@ -1,4 +1,9 @@
 defmodule Bfs do
+
+  @moduledoc """
+  Breadth-first search for Binary Search Tree
+  """
+
   def run do
     bst =  Bst.from_array(200..230 |> Enum.into([]))
     bfs([bst], 220)

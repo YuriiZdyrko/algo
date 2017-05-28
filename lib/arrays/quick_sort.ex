@@ -1,31 +1,23 @@
 defmodule QuickSort do
-
-  # Very slow. Can be improved by passing lo/hi bounds to split, instead of passing sub-arrays
-
   def run do
     {t, v} = :timer.tc(fn() -> List.flatten(sort(Enum.into(1000..1, []))) end)
     IO.inspect("Time(ms): #{t/1000}")
     IO.inspect("Result: #{inspect v}")
   end
 
-
-  def sort(arr) when length(arr) < 2 do
-    arr
-  end
+  def sort(arr) when length(arr) < 2, do: arr
   def sort(arr) do
-    {sorted, pvt_i} = split(arr)
-    # :timer.sleep(100)
-    {h, t} = Enum.split(sorted, pvt_i)
-    # IO.inspect("sort_step h: #{inspect h}, t: #{inspect t}")
+    {sorted_by_pvt, pvt_i} = split(arr)
+    {h, t} = Enum.split(sorted_by_pvt, pvt_i)
     [sort(h) | sort(t)]
   end
 
   def split(arr) do
-    split(arr, Enum.at(arr, length(arr) - 1), length(arr) - 1, 0)
+    pvt_i = :rand.uniform(length(arr))
+    split(arr, Enum.at(arr, pvt_i), pvt_i, 0)
   end
 
   def split(arr, pvt, pvt_i, curr_i) do
-    # IO.puts("split_step: #{inspect arr}")
     if (curr_i < pvt_i) do
       if Enum.at(arr, curr_i) > pvt do
         curr = Enum.at(arr, curr_i)
@@ -44,7 +36,6 @@ defmodule QuickSort do
         split(arr, pvt, pvt_i, curr_i + 1)
       end
     else
-      # IO.puts("result #{inspect arr}")
       {arr, pvt_i}
     end
   end

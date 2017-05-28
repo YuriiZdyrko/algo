@@ -1,4 +1,9 @@
 defmodule Dfs do
+
+  @moduledoc """
+  Depth-first search for Binary Search Tree
+  """
+
   def run do
     bst =  Bst.from_array(200..230 |> Enum.into([]))
     dfs(bst, 220, [])

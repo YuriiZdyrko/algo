@@ -1,26 +1,13 @@
 defmodule Bst do
 
-  import IEx
+  @moduledoc """
+  Binary Search Tree implementation
+  """
 
-  def run do
-    bst = from_array(Enum.into(200..230, []))
-    # print_graph(bst)
-    # has_value(bst, 290)
-    # print_graph(insert(bst, 240))
-    removed = remove(bst, 203) # Should be replaced with smallest right (204)
-    print_graph(removed)
-  end
-
-
-  def from_array([]) do
-    nil
-  end
-  def from_array(arr) when length(arr) == 1 do
-    [v] = arr
-    %{left: nil, right: nil, v: v}
-  end
+  def from_array([]), do: nil
+  def from_array([v]), do: %{left: nil, right: nil, v: v}
   def from_array(arr) do
-    middle_i = round(length(arr) / 2 - 1)
+    middle_i = round(length(arr) / 2)
     {left, [h|right]} = Enum.split(arr, middle_i)
     %{left: from_array(left), right: from_array(right), v: h}
   end
@@ -32,9 +19,7 @@ defmodule Bst do
   end
 
   def do_print(nodes) do
-    if (Enum.all?(nodes, fn(i) -> i == nil end)) do
-      "---"
-    else
+    if (!Enum.all?(nodes, fn(i) -> i == nil end)) do
       nodes
       |> Enum.reduce("", fn(node, lvl_txt) ->
         lvl_txt <> node_lvl_txt(node) <> "  "
@@ -50,28 +35,19 @@ defmodule Bst do
         [left, right]
       end)
       |> do_print
-
     end
   end
 
-  def insert(nil, new_value) do
-    %{v: new_value, right: nil, left: nil}
-  end
+  def insert(nil, new_value), do: %{v: new_value, right: nil, left: nil}
   def insert(bst, new_value) do
-    if !has_value(bst, new_value) do
-      if (bst.v < new_value) do
-        %{v: bst.v, right: insert(bst.right, new_value), left: bst.left}
-      else
-        %{v: bst.v, right: bst.right, left: insert(bst.left, new_value)}
-      end
-    else
-      bst
+    cond do
+      bst.v < new_value -> %{v: bst.v, right: insert(bst.right, new_value), left: bst.left}
+      bst.v > new_value -> %{v: bst.v, right: bst.right, left: insert(bst.left, new_value)}
+      bst.v == new_value -> bst
     end
   end
 
-  def has_value(nil, _) do
-    false
-  end
+  def has_value(nil, _), do: false
   def has_value(bst, search_value) do
     case bst.v do
       v when v == search_value -> true
@@ -116,10 +92,8 @@ defmodule Bst do
     end
   end
 
-  def node_lvl_txt(nil) do
-    ""
-  end
+  def node_lvl_txt(nil), do: ""
   def node_lvl_txt(lvl) do
-    "#{lvl.v} > (#{lvl.left && lvl.left.v || "x"} #{lvl.right && lvl.right.v || "x"})"
+    "#{lvl.v} > (#{lvl.left && lvl.left.v || "nil"} #{lvl.right && lvl.right.v || "nil"})"
   end
 end
