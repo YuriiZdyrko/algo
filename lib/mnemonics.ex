@@ -1,7 +1,26 @@
 defmodule Mnemonics do
+  @moduledoc """
+  Given a:
+  - ordered list of keys [key1, key2, ...]
+  - mappinng of %{
+    key1 -> [string1, string2, ...], 
+    key2 -> [string3, ...]
+    ...
+  }
+  produce all possible strings permutations for given keys
 
-  import IEx
-  def run(numbers \\ [2, 3, 4]) do
+
+  P.S. This code is trivial...
+  In fact I intended to show different module as a non-trivial example:
+  https://github.com/banzay/algo/blob/master/lib/markov/markov.ex
+  """
+
+  @doc """
+  Convenience method to avoid entering arguments manually in command line
+  """
+  def generate_combinations() do
+    numbers = [2, 3, 4]
+
     mapping = %{
       2 => ["A", "B", "C"],
       3 => ["D", "E", "F"],
@@ -12,41 +31,79 @@ defmodule Mnemonics do
     generate_combinations(numbers, mapping)
   end
 
+  @doc ~S"""
+  Returns correct result
+
+  ## Examples
+
+      iex> Mnemonics.generate_combinations([2,3,4], %{
+      ...>   1 => ["a", "b", "c"],
+      ...>   2 => ["d", "e", "f"],
+      ...>   3 => ["j"],
+      ...>   4 => ["g", "h"]
+      ...> })
+      ["djg", "djh", "ejg", "ejh", "fjg", "fjh"]
+
+  """
   def generate_combinations(numbers, mapping) do
-    result = Enum.map(numbers, &(mapping[&1]))
-    v_recursive(result)
+    mapping
+    |> Map.take(numbers)
+    |> Map.values()
+    |> v2_recursive()
   end
 
-  def v_iterative(result) do
-    1..length(result) - 1
+  @doc """
+  Approach #1: Iteration
+  """
+  defp v_iterative(result) do
+    1..(length(result) - 1)
     |> Enum.reduce(
       List.first(result),
-      fn(i, aggr) ->
-        Enum.flat_map(aggr, fn(aggr_item) ->
+      fn i, aggr ->
+        Enum.flat_map(aggr, fn aggr_item ->
           Enum.map(
             Enum.at(result, i),
-            fn(new_item) -> aggr_item <> new_item end
+            fn new_item -> aggr_item <> new_item end
           )
         end)
       end
     )
   end
 
-  def v_recursive(data) do
-    recursive(data, length(data), 1, List.first(data))
+  @doc """
+  Approach #2: Tail recursion
+  """
+  defp v_recursive(data) do
+    v_recursive(data, length(data), 1, List.first(data))
   end
 
-  def recursive(data, depth, cur_depth, list) when depth == cur_depth do
+  defp v_recursive(data, depth, cur_depth, list) when depth == cur_depth do
     list
   end
 
-  def recursive(data, depth, cur_depth, list) do
-    res = Enum.flat_map(list, fn(aggr_item) ->
-      Enum.map(
-        Enum.at(data, cur_depth),
-        fn(new_item) -> aggr_item <> new_item end
-      )
-    end)
-    recursive(data, depth, cur_depth + 1, res)
+  defp v_recursive(data, depth, cur_depth, list) do
+    res =
+      Enum.flat_map(list, fn aggr_item ->
+        Enum.map(
+          Enum.at(data, cur_depth),
+          fn new_item -> aggr_item <> new_item end
+        )
+      end)
+
+    v_recursive(data, depth, cur_depth + 1, res)
+  end
+
+  @doc """
+  Approach #3: Recursion
+  """
+  defp v2_recursive([last]), do: last
+
+  defp v2_recursive([h | t] = data) do
+    next = v2_recursive(t)
+
+    for v_h <- h, v_n <- next do
+      v_h <> v_n
+    end
+    |> List.flatten()
   end
 end
