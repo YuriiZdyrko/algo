@@ -1,5 +1,4 @@
 defmodule Shapes do
-
   @moduledoc """
   Finds matching shapes (horizontal and vertical lines of length 3)
   in 2-dimensinal array.
@@ -8,16 +7,15 @@ defmodule Shapes do
   """
 
   @matrix [
-    [0,0,0,  1,1,1,1,1,1],
-    [0,1,0,  1,1,1,1,1,1],
-    [0,1,0,  1,1,1,1,1,1],
-
-    [1,1,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,0,1,1],
-    [1,1,1,1,0,0,0,1,1],
-    [1,1,1,1,1,1,0,1,1]
+    [0, 0, 0, 1, 1, 1, 1, 1, 1],
+    [0, 1, 0, 1, 1, 1, 1, 1, 1],
+    [0, 1, 0, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 0, 1, 1],
+    [1, 1, 1, 1, 0, 0, 0, 1, 1],
+    [1, 1, 1, 1, 1, 1, 0, 1, 1]
   ]
 
   def run do
@@ -29,16 +27,14 @@ defmodule Shapes do
   """
   def find(shapes) do
     shapes
-    |> Enum.with_index
-    |> Enum.flat_map(fn({_, index}) ->
+    |> Enum.with_index()
+    |> Enum.flat_map(fn {_, index} ->
       process_row(shapes, index)
     end)
-
-    |> List.flatten
+    |> List.flatten()
     |> Enum.filter(&(&1 !== nil))
-
-    |> Enum.sort
-    |> Enum.dedup
+    |> Enum.sort()
+    |> Enum.dedup()
   end
 
   @doc """
@@ -47,10 +43,17 @@ defmodule Shapes do
   defp process_row(shapes, row_index) do
     shapes
     |> Enum.at(row_index)
-    |> Enum.with_index
-    |> Enum.map(fn({cell, cell_index}) ->
+    |> Enum.with_index()
+    |> Enum.map(fn {cell, cell_index} ->
       if cell === 0 do
-        cell_zero_siblings = explore(shapes, {row_index, cell_index}, {row_index, cell_index}, MapSet.new([{row_index, cell_index}]))
+        cell_zero_siblings =
+          explore(
+            shapes,
+            {row_index, cell_index},
+            {row_index, cell_index},
+            MapSet.new([{row_index, cell_index}])
+          )
+
         process_cube(cell_zero_siblings)
       end
     end)
@@ -72,7 +75,7 @@ defmodule Shapes do
 
     MapSet.union(
       new_result,
-      Enum.reduce(new_found, new_result, fn(new_found_coord, acc) ->
+      Enum.reduce(new_found, new_result, fn new_found_coord, acc ->
         explore(shapes, coords, new_found_coord, acc)
       end)
     )
@@ -84,12 +87,12 @@ defmodule Shapes do
   """
   def get_relevant_siblings(shapes, coords, curr_coords) do
     [:right, :down, :left, :up]
-    |> Enum.map(fn(i) -> get_all_siblings(shapes, curr_coords, i) end)
-    |> Enum.filter(fn({found_coords, v}) ->
+    |> Enum.map(fn i -> get_all_siblings(shapes, curr_coords, i) end)
+    |> Enum.filter(fn {found_coords, v} ->
       v !== 1 && in_range?(coords, found_coords)
     end)
-    |> Enum.map(fn({found_coords, _}) -> found_coords end)
-    |> Enum.into(MapSet.new)
+    |> Enum.map(fn {found_coords, _} -> found_coords end)
+    |> Enum.into(MapSet.new())
   end
 
   @doc """
@@ -99,19 +102,21 @@ defmodule Shapes do
   def process_cube(cube) do
     cube_arr = Enum.into(cube, [])
 
-    x_row = cube_arr
-    |> Enum.sort_by(fn({_, x}) -> x end)
-    |> Enum.chunk_by(fn({_, x}) -> x end)
+    x_row =
+      cube_arr
+      |> Enum.sort_by(fn {_, x} -> x end)
+      |> Enum.chunk_by(fn {_, x} -> x end)
 
-    y_row = cube_arr
-    |> Enum.sort_by(fn({y, _}) -> y end)
-    |> Enum.chunk_by(fn({y, _}) -> y end)
+    y_row =
+      cube_arr
+      |> Enum.sort_by(fn {y, _} -> y end)
+      |> Enum.chunk_by(fn {y, _} -> y end)
 
     [x_row, y_row]
-    |> Enum.flat_map(fn(axis_results) ->
+    |> Enum.flat_map(fn axis_results ->
       axis_results
-      |> Enum.filter(fn(i) -> length(i) == 3 end)
-      |> Enum.map(fn(i) -> Enum.into(i, MapSet.new()) end)
+      |> Enum.filter(fn i -> length(i) == 3 end)
+      |> Enum.map(fn i -> Enum.into(i, MapSet.new()) end)
     end)
   end
 
@@ -127,19 +132,22 @@ defmodule Shapes do
   Example response: [{{0, 1}, 1}, {{0, 2}, v}]
   """
   defp get_all_siblings(shapes, {y, x}, dir) do
-    {y, x} = case dir do
-      :right -> {y, x + 1}
-      :down -> {y - 1, x}
-      :left -> {y, x - 1}
-      :up -> {y + 1, x}
-    end
+    {y, x} =
+      case dir do
+        :right -> {y, x + 1}
+        :down -> {y - 1, x}
+        :left -> {y, x - 1}
+        :up -> {y + 1, x}
+      end
 
-    if (y < 0 || x < 0 || y >= length(shapes) || x >= length(shapes)) do
+    if y < 0 || x < 0 || y >= length(shapes) || x >= length(shapes) do
       {{y, x}, 1}
     else
-      v = shapes
-      |> Enum.at(y)
-      |> Enum.at(x)
+      v =
+        shapes
+        |> Enum.at(y)
+        |> Enum.at(x)
+
       {{y, x}, v}
     end
   end

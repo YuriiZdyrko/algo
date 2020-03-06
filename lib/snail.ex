@@ -1,5 +1,4 @@
 defmodule Snail do
-
   @doc """
 
   Converts a matrix to a list by walking around its edges from the top-left going clockwise.
@@ -11,11 +10,12 @@ defmodule Snail do
 
   """
 
-  @spec snail( [ [ term ] ] ) :: [ term ]
+  @spec snail([[term]]) :: [term]
 
   def snail(matrix), do: snail(matrix, [])
   def snail([], result), do: result
   def snail([last], result), do: result ++ last
+
   def snail([h | t], result) do
     {mid, [bottom]} = Enum.split(t, -1)
     {left, right, rest} = process_middle_rows(mid)
@@ -23,11 +23,14 @@ defmodule Snail do
   end
 
   def process_middle_rows(rows) do
-    right = Enum.map(rows, fn(i) -> List.last(i) end)
-    left = Enum.reverse(Enum.map(rows, fn(i) -> List.first(i) end))
-    rest = Enum.map(rows, fn(i) ->
-      Enum.slice(i, 1, length(i) - 2)
-    end)
+    right = Enum.map(rows, fn i -> List.last(i) end)
+    left = Enum.reverse(Enum.map(rows, fn i -> List.first(i) end))
+
+    rest =
+      Enum.map(rows, fn i ->
+        Enum.slice(i, 1, length(i) - 2)
+      end)
+
     {left, right, rest}
   end
 end

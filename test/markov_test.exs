@@ -3,7 +3,9 @@ defmodule MarkovTest do
   doctest Markov
 
   setup do
-    str = "As Gregor Samsa awoke one morning from uneasy dreams he found himself transformed in his bed into a gigantic insect."
+    str =
+      "As Gregor Samsa awoke one morning from uneasy dreams he found himself transformed in his bed into a gigantic insect."
+
     [str: str]
   end
 

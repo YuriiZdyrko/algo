@@ -4,7 +4,8 @@ defmodule BstTest do
   doctest Bst
 
   test "creates balanced BST from array" do
-    expected = %{v: 3,
+    expected = %{
+      v: 3,
       left: %{
         v: 2,
         left: %{
@@ -20,7 +21,8 @@ defmodule BstTest do
         right: nil
       }
     }
-    assert Bst.from_array([1,2,3,4]) == expected
+
+    assert Bst.from_array([1, 2, 3, 4]) == expected
   end
 
   test "has_value/2 returns correct result" do
@@ -45,6 +47,6 @@ defmodule BstTest do
   test "remove/2 removes node" do
     bst = from_array(Enum.into(200..230, []))
     removed = Bst.remove(bst, 220)
-    assert Bst.has_value(removed, 220) == false 
+    assert Bst.has_value(removed, 220) == false
   end
 end
